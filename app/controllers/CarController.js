@@ -1,4 +1,5 @@
 const { Op } = require("sequelize");
+const { CarAlreadyRentedError } = require("../errors");
 const ApplicationController = require("./ApplicationController");
 
 class CarController extends ApplicationController {
@@ -23,13 +24,13 @@ class CarController extends ApplicationController {
         pagination,
       }
     });
-  }
+  };
 
   handleGetCar = async (req, res) => {
-    const car = await this.getCarFromRequest(req); 
+    const car = await this.getCarFromRequest(req);
 
     res.status(200).json(car);
-  }
+  };
 
   handleCreateCar = async (req, res) => {
     try {
@@ -51,7 +52,7 @@ class CarController extends ApplicationController {
       res.status(201).json(car);
     }
 
-    catch(err) {
+    catch (err) {
       res.status(422).json({
         error: {
           name: err.name,
@@ -59,12 +60,12 @@ class CarController extends ApplicationController {
         }
       });
     }
-  }
+  };
 
   handleRentCar = async (req, res, next) => {
     try {
       let { rentStartedAt, rentEndedAt } = req.body;
-      const car = await this.getCarFromRequest(req)
+      const car = await this.getCarFromRequest(req);
 
       if (!rentEndedAt) rentEndedAt = this.dayjs(rentStartedAt).add(1, "day");
 
@@ -75,14 +76,14 @@ class CarController extends ApplicationController {
             [Op.gte]: rentStartedAt,
           },
           rentEndedAt: {
-            [Op.lte]: rentEndedAt, 
+            [Op.lte]: rentEndedAt,
           }
         }
       });
 
-      if (!!activeRent) {
+      if (activeRent) {
         const err = new CarAlreadyRentedError(car);
-        res.status(422).json(err)
+        res.status(422).json(err);
         return;
       }
 
@@ -93,13 +94,13 @@ class CarController extends ApplicationController {
         rentEndedAt,
       });
 
-      res.status(201).json(userCar)
+      res.status(201).json(userCar);
     }
 
-    catch(err) {
+    catch (err) {
       next(err);
     }
-  }
+  };
 
   handleUpdateCar = async (req, res) => {
     try {
@@ -123,7 +124,7 @@ class CarController extends ApplicationController {
       res.status(200).json(car);
     }
 
-    catch(err) {
+    catch (err) {
       res.status(422).json({
         error: {
           name: err.name,
@@ -131,12 +132,12 @@ class CarController extends ApplicationController {
         }
       });
     }
-  }
+  };
 
   handleDeleteCar = async (req, res) => {
-    const car = await this.carModel.destroy(req.params.id); 
+    const car = await this.carModel.destroy(req.params.id);
     res.status(204).end();
-  }
+  };
 
   getCarFromRequest(req) {
     return this.carModel.findByPk(req.params.id);
@@ -151,15 +152,15 @@ class CarController extends ApplicationController {
       model: this.userCarModel,
       as: "userCar",
       required: false,
-    }
+    };
 
-    if (!!size) where.size = size;
-    if (!!availableAt) {
+    if (size) where.size = size;
+    if (availableAt) {
       include.where = {
         rentEndedAt: {
-          [Op.gte]: availableAt, 
+          [Op.gte]: availableAt,
         }
-      }
+      };
     }
 
     const query = {
