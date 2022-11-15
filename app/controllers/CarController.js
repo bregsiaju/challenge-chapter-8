@@ -65,7 +65,7 @@ class CarController extends ApplicationController {
   handleRentCar = async (req, res, next) => {
     try {
       let { rentStartedAt, rentEndedAt } = req.body;
-      const car = this.getCarFromRequest(req);
+      const car = await this.getCarFromRequest(req);
 
       if (!rentEndedAt) rentEndedAt = this.dayjs(rentStartedAt).add(1, "day");
 
