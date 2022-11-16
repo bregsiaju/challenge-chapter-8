@@ -1,7 +1,11 @@
 const request = require("supertest");
 const app = require("../app");
 const dotenv = require("dotenv");
-const { EmailNotRegisteredError, EmailAlreadyTakenError, InsufficientAccessError } = require("../app/errors");
+const {
+  EmailNotRegisteredError,
+  EmailAlreadyTakenError,
+  InsufficientAccessError
+} = require("../app/errors");
 dotenv.config();
 
 describe("API error: email is not registered", () => {
