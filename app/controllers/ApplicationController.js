@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 const { NotFoundError } = require("../errors");
 
 class ApplicationController {
@@ -16,17 +17,18 @@ class ApplicationController {
         name: err.name,
         message: err.message,
         details: err.details,
-      }
+      },
     });
   };
 
+  // eslint-disable-next-line no-unused-vars
   handleError = (err, req, res, next) => {
     res.status(500).json({
       error: {
         name: err.name,
         message: err.message,
         details: err.details || null,
-      }
+      },
     });
   };
 

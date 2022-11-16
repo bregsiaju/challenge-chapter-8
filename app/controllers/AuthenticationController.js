@@ -1,14 +1,15 @@
 const ApplicationController = require("./ApplicationController");
-const { EmailNotRegisteredError, InsufficientAccessError, RecordNotFoundError, WrongPasswordError, EmailAlreadyTakenError } = require("../errors");
+const {
+  EmailNotRegisteredError,
+  InsufficientAccessError,
+  RecordNotFoundError,
+  WrongPasswordError,
+  EmailAlreadyTakenError,
+} = require("../errors");
 const { JWT_SIGNATURE_KEY } = require("../../config/application");
 
 class AuthenticationController extends ApplicationController {
-  constructor({
-    userModel,
-    roleModel,
-    bcrypt,
-    jwt,
-  }) {
+  constructor({ userModel, roleModel, bcrypt, jwt }) {
     super();
     this.userModel = userModel;
     this.roleModel = roleModel;
@@ -28,20 +29,18 @@ class AuthenticationController extends ApplicationController {
         const token = req.headers.authorization?.split("Bearer ")[1];
         const payload = this.decodeToken(token);
 
-        if (!!rolename && rolename != payload.role.name)
+        if (!!rolename && rolename !== payload.role.name)
           throw new InsufficientAccessError(payload?.role?.name);
 
         req.user = payload;
         next();
-      }
-
-      catch (err) {
+      } catch (err) {
         res.status(401).json({
           error: {
             name: err.name,
             message: err.message,
             details: err.details || null,
-          }
+          },
         });
       }
     };
@@ -50,10 +49,10 @@ class AuthenticationController extends ApplicationController {
   handleLogin = async (req, res, next) => {
     try {
       const email = req.body.email.toLowerCase();
-      const password = req.body.password;
+      const { password } = req.body;
       const user = await this.userModel.findOne({
-        where: { email, },
-        include: [{ model: this.roleModel, attributes: ["id", "name",], }]
+        where: { email },
+        include: [{ model: this.roleModel, attributes: ["id", "name"] }],
       });
 
       if (!user) {
@@ -62,7 +61,10 @@ class AuthenticationController extends ApplicationController {
         return;
       }
 
-      const isPasswordCorrect = this.verifyPassword(password, user.encryptedPassword);
+      const isPasswordCorrect = this.verifyPassword(
+        password,
+        user.encryptedPassword
+      );
 
       if (!isPasswordCorrect) {
         const err = new WrongPasswordError();
@@ -75,19 +77,17 @@ class AuthenticationController extends ApplicationController {
       res.status(201).json({
         accessToken,
       });
-    }
-
-    catch (err) {
+    } catch (err) {
       next(err);
     }
   };
 
   handleRegister = async (req, res, next) => {
     try {
-      const name = req.body.name;
+      const { name } = req.body;
       const email = req.body.email.toLowerCase();
-      const password = req.body.password;
-      let existingUser = await this.userModel.findOne({ where: { email, }, });
+      const { password } = req.body;
+      const existingUser = await this.userModel.findOne({ where: { email } });
 
       if (existingUser) {
         const err = new EmailAlreadyTakenError(email);
@@ -96,7 +96,7 @@ class AuthenticationController extends ApplicationController {
       }
 
       const role = await this.roleModel.findOne({
-        where: { name: this.accessControl.CUSTOMER }
+        where: { name: this.accessControl.CUSTOMER },
       });
 
       const user = await this.userModel.create({
@@ -111,9 +111,7 @@ class AuthenticationController extends ApplicationController {
       res.status(201).json({
         accessToken,
       });
-    }
-
-    catch (err) {
+    } catch (err) {
       next(err);
     }
   };
@@ -139,16 +137,19 @@ class AuthenticationController extends ApplicationController {
   };
 
   createTokenFromUser = (user, role) => {
-    return this.jwt.sign({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      image: user.image,
-      role: {
-        id: role.id,
-        name: role.name,
-      }
-    }, JWT_SIGNATURE_KEY);
+    return this.jwt.sign(
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        image: user.image,
+        role: {
+          id: role.id,
+          name: role.name,
+        },
+      },
+      JWT_SIGNATURE_KEY
+    );
   };
 
   decodeToken(token) {

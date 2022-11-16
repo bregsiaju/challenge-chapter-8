@@ -1,17 +1,15 @@
 {
   "env": {
-    "browser": true,
-    "commonjs": true,
-    "es2021": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
-  "extends": "eslint:recommended",
-  "overrides": [],
+  "extends": ["airbnb-base", "plugin:jest/recommended", "plugin:prettier/recommended"],
+  "plugins": ["jest", "prettier"],
   "parserOptions": {
     "ecmaVersion": "latest"
   },
   "rules": {
     "quotes": ["warn", "double"],
-    "no-unused-vars": "off"
+    "no-unused-vars": "warn"
   }
 }

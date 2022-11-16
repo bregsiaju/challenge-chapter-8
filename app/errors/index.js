@@ -11,5 +11,5 @@ module.exports = {
   InsufficientAccessError,
   NotFoundError,
   WrongPasswordError,
-  EmailAlreadyTakenError
+  EmailAlreadyTakenError,
 };
