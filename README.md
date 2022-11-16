@@ -9,9 +9,9 @@ Tugas kalian disini adalah:
 Good luck!
 
 ## Deployment URL
-- https://challenge-chapter-8-production-8c90.up.railway.app/
+- https://challenge-chapter-8-bregsi.up.railway.app/
 
-## The Last Testing Result (on Railway.app)
+## The Lastest Testing Result (on Railway.app)
 File                          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
 ------------------------------|---------|----------|---------|---------|--------------------------------
 All files                     |   87.81 |    66.66 |   84.61 |   88.76 |
