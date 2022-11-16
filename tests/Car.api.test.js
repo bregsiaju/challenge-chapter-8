@@ -8,9 +8,7 @@ describe("GET /cars", () => {
   describe("success get all cars", () => {
     it("should response with a 200 status code", async () => {
       const response = await request(app).get("/v1/cars");
-      expect(response.statusCode)
-        .resolves
-        .toBe(200);
+      expect(response.statusCode).toBe(200);
     });
   });
 
